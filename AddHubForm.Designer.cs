@@ -156,8 +156,10 @@
             // 
             // AddHubForm
             // 
+            this.AcceptButton = this.okButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.CancelButton = this.cancelButton;
             this.ClientSize = new System.Drawing.Size(264, 131);
             this.ControlBox = false;
             this.Controls.Add(this.tableLayoutPanel2);
@@ -166,8 +168,12 @@
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(280, 170);
             this.Name = "AddHubForm";
+            this.ShowIcon = false;
+            this.ShowInTaskbar = false;
+            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Add Other Hub";
+            this.TopMost = true;
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.tableLayoutPanel2.ResumeLayout(false);

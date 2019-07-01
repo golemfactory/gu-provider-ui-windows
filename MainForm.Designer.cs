@@ -74,7 +74,7 @@
             dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.ControlText;
             this.nodeList.RowsDefaultCellStyle = dataGridViewCellStyle1;
             this.nodeList.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.nodeList.Size = new System.Drawing.Size(618, 211);
+            this.nodeList.Size = new System.Drawing.Size(618, 251);
             this.nodeList.TabIndex = 2;
             // 
             // Connect
@@ -123,7 +123,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(634, 281);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(634, 321);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
             // flowLayoutPanel1
@@ -131,7 +131,7 @@
             this.flowLayoutPanel1.AutoSize = true;
             this.flowLayoutPanel1.Controls.Add(this.connectionStatus);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(8, 260);
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(8, 300);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Size = new System.Drawing.Size(618, 13);
             this.flowLayoutPanel1.TabIndex = 0;
@@ -199,9 +199,9 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(634, 281);
+            this.ClientSize = new System.Drawing.Size(634, 321);
             this.Controls.Add(this.tableLayoutPanel1);
-            this.MinimumSize = new System.Drawing.Size(650, 320);
+            this.MinimumSize = new System.Drawing.Size(650, 360);
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Golem Unlimited Provider UI";
