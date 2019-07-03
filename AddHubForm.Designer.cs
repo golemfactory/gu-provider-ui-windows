@@ -30,8 +30,8 @@
         {
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.label1 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.ipAddress = new System.Windows.Forms.TextBox();
+            this.portNumber = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
@@ -48,8 +48,8 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.Controls.Add(this.label1, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.textBox1, 1, 0);
-            this.tableLayoutPanel1.Controls.Add(this.textBox2, 1, 1);
+            this.tableLayoutPanel1.Controls.Add(this.ipAddress, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.portNumber, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.label2, 0, 1);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(13, 13);
@@ -70,22 +70,22 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "IP Address";
             // 
-            // textBox1
+            // ipAddress
             // 
-            this.textBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBox1.Location = new System.Drawing.Point(67, 3);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(168, 20);
-            this.textBox1.TabIndex = 1;
+            this.ipAddress.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ipAddress.Location = new System.Drawing.Point(67, 3);
+            this.ipAddress.Name = "ipAddress";
+            this.ipAddress.Size = new System.Drawing.Size(168, 20);
+            this.ipAddress.TabIndex = 1;
             // 
-            // textBox2
+            // portNumber
             // 
-            this.textBox2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBox2.Location = new System.Drawing.Point(67, 29);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(168, 20);
-            this.textBox2.TabIndex = 2;
-            this.textBox2.Text = "61622";
+            this.portNumber.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.portNumber.Location = new System.Drawing.Point(67, 29);
+            this.portNumber.Name = "portNumber";
+            this.portNumber.Size = new System.Drawing.Size(168, 20);
+            this.portNumber.TabIndex = 2;
+            this.portNumber.Text = "61622";
             // 
             // label2
             // 
@@ -187,12 +187,12 @@
 
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.Button okButton;
         private System.Windows.Forms.Button cancelButton;
+        public System.Windows.Forms.TextBox ipAddress;
+        public System.Windows.Forms.TextBox portNumber;
     }
 }

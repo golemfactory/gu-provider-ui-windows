@@ -13,7 +13,6 @@ namespace gu_provider_ui_windows
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            //var MainForm = new MainForm();
             Application.Run(new MainForm());
         }
     }
