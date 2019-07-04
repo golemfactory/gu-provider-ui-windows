@@ -105,16 +105,6 @@ namespace gu_provider_ui_windows
             this.Hide();
         }
 
-        private void AutoConnect_CheckedChanged(object sender, EventArgs e)
-        {
-            restClient.Execute(new RestRequest("nodes/auto",
-                    this.autoConnect.CheckState == CheckState.Checked ? Method.PUT : Method.DELETE, DataFormat.Json)
-                .AddHeader("Content-type", "application/json").AddJsonBody(new {}));
-            restClient.Execute(new RestRequest("connections/mode/"
-                + (this.autoConnect.CheckState == CheckState.Checked ? "auto" : "manual")
-                + "?save=1", Method.PUT));
-        }
-
         private void RefreshButton_Click(object sender, EventArgs e)
         {
             this.ReloadHubList();
@@ -136,9 +126,33 @@ namespace gu_provider_ui_windows
             this.statusField.Text = "No connection";
         }
 
+        private void AutoConnect_CheckedChanged(object sender, EventArgs e)
+        {
+            restClient.Execute(new RestRequest("nodes/auto",
+                    this.autoConnect.CheckState == CheckState.Checked ? Method.PUT : Method.DELETE, DataFormat.Json)
+                .AddHeader("Content-type", "application/json").AddJsonBody(new { }));
+            restClient.Execute(new RestRequest("connections/mode/"
+                + (this.autoConnect.CheckState == CheckState.Checked ? "auto" : "manual")
+                + "?save=1", Method.PUT));
+        }
+
         private void NodeList_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            //this.statusField.Text = e.RowIndex + " " + e.ColumnIndex + " " + nodeList.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
+            if (e.ColumnIndex == 0)
+            {
+                bool enable = (bool)nodeList.Rows[e.RowIndex].Cells[0].EditedFormattedValue;
+                string nodeId = (string)nodeList.Rows[e.RowIndex].Cells[3].Value;
+                AddressAndHostName body = new AddressAndHostName
+                {
+                    Address = (string)nodeList.Rows[e.RowIndex].Cells[2].Value,
+                    HostName = (string)nodeList.Rows[e.RowIndex].Cells[1].Value
+                };
+                restClient.Execute(new RestRequest("nodes/" + nodeId, enable ? Method.PUT : Method.DELETE, DataFormat.Json)
+                    .AddParameter("application/json", JsonConvert.SerializeObject(body), ParameterType.RequestBody));
+                restClient.Execute(new RestRequest("connections/" + (enable ? "connect" : "disconnect") + "?save=1", Method.POST)
+                    .AddHeader("Content-type", "application/json").AddJsonBody(new string[] { nodeId }));
+            }
+
         }
     }
 }
@@ -177,4 +191,12 @@ class ServerStatusInfo
 {
     [JsonProperty("envs")]
     public Dictionary<string, string> Envs { get; set; }
+}
+
+class AddressAndHostName
+{
+    [JsonProperty("address")]
+    public string Address { get; set; }
+    [JsonProperty("hostName")]
+    public string HostName { get; set; }
 }
