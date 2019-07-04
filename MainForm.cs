@@ -76,6 +76,19 @@ namespace gu_provider_ui_windows
             var result = f.ShowDialog();
             if (result == DialogResult.OK)
             {
+                var ipPort = f.ipAddress + ":" + f.portNumber;
+                /* TODO check IP */
+                var urlString = "http://" + ipPort;
+                var hubResponse = new RestClient(urlString).Execute(new RestRequest("node_id/", Method.GET)).Content;
+                var nodeIdAndHostName = hubResponse.Split(new char[] { ' ' }, 2);
+                AddressAndHostName body = new AddressAndHostName
+                {
+                    Address = ipPort,
+                    HostName = nodeIdAndHostName[1]
+                };
+                restClient.Execute(new RestRequest("nodes/" + nodeIdAndHostName[0], Method.PUT, DataFormat.Json)
+                    .AddParameter("application/json", JsonConvert.SerializeObject(body), ParameterType.RequestBody));
+                ReloadHubList();
             }
         }
 
