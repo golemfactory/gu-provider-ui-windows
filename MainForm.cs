@@ -76,7 +76,7 @@ namespace gu_provider_ui_windows
             var result = f.ShowDialog();
             if (result == DialogResult.OK)
             {
-                var ipPort = f.ipAddress + ":" + f.portNumber;
+                var ipPort = f.ipAddress.Text + ":" + f.portNumber.Text;
                 /* TODO check IP */
                 var urlString = "http://" + ipPort;
                 var hubResponse = new RestClient(urlString).Execute(new RestRequest("node_id/", Method.GET)).Content;
