@@ -25,6 +25,11 @@ namespace gu_provider_ui_windows
         private void ReloadHubList()
         {
             var autoMode = restClient.Execute(new RestRequest("nodes/auto", Method.GET));
+            if (autoMode.ResponseStatus != ResponseStatus.Completed)
+            {
+                MessageBox.Show("Cannot connect to Golem Unlimited Provider.");
+                return;
+            }
             if (autoMode.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 autoConnect.Checked = autoMode.Content.Contains("true");
@@ -77,18 +82,24 @@ namespace gu_provider_ui_windows
             if (result == DialogResult.OK)
             {
                 var ipPort = f.ipAddress.Text + ":" + f.portNumber.Text;
-                /* TODO check IP */
-                var urlString = "http://" + ipPort;
-                var hubResponse = new RestClient(urlString).Execute(new RestRequest("node_id/", Method.GET)).Content;
-                var nodeIdAndHostName = hubResponse.Split(new char[] { ' ' }, 2);
-                AddressAndHostName body = new AddressAndHostName
+                try
                 {
-                    Address = ipPort,
-                    HostName = nodeIdAndHostName[1]
-                };
-                restClient.Execute(new RestRequest("nodes/" + nodeIdAndHostName[0], Method.PUT, DataFormat.Json)
-                    .AddParameter("application/json", JsonConvert.SerializeObject(body), ParameterType.RequestBody));
-                ReloadHubList();
+                    var urlString = "http://" + ipPort;
+                    var hubResponse = new RestClient(urlString).Execute(new RestRequest("node_id/", Method.GET)).Content;
+                    var nodeIdAndHostName = hubResponse.Split(new char[] { ' ' }, 2);
+                    AddressAndHostName body = new AddressAndHostName
+                    {
+                        Address = ipPort,
+                        HostName = nodeIdAndHostName[1]
+                    };
+                    restClient.Execute(new RestRequest("nodes/" + nodeIdAndHostName[0], Method.PUT, DataFormat.Json)
+                        .AddParameter("application/json", JsonConvert.SerializeObject(body), ParameterType.RequestBody));
+                    ReloadHubList();
+                }
+                catch (Exception err)
+                {
+                    MessageBox.Show("Cannot add " + ipPort + ". Error: " + err.Message);
+                }
             }
         }
 
@@ -125,28 +136,41 @@ namespace gu_provider_ui_windows
 
         private void CheckProviderStatus_Tick(object sender, EventArgs e)
         {
-            var res = restClient.Execute(new RestRequest("status?timeout=1", Method.GET));
-            if (res.StatusCode == System.Net.HttpStatusCode.OK)
+            restClient.ExecuteAsync(new RestRequest("status?timeout=1", Method.GET), res =>
             {
-                var statusObj = JsonConvert.DeserializeObject<ServerStatusInfo>(res.Content);
-                if (statusObj != null)
+                if (res.StatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    var status = statusObj.Envs["hostDirect"];
-                    this.statusField.Text = "Golem Unlimited Provider Status: " + status;
-                    return;
+                    var statusObj = JsonConvert.DeserializeObject<ServerStatusInfo>(res.Content);
+                    if (statusObj != null)
+                    {
+                        var status = statusObj.Envs["hostDirect"];
+                        //this.statusField.Text = "Golem Unlimited Provider Status: " + status;
+                        statusField.Invoke((MethodInvoker)(() => statusField.Text = "Golem Unlimited Provider Status: " + status));
+                        return;
+                    }
                 }
-            }
-            this.statusField.Text = "No connection";
+                statusField.Invoke((MethodInvoker)(() => statusField.Text = "No connection"));
+            });
         }
 
         private void AutoConnect_CheckedChanged(object sender, EventArgs e)
         {
-            restClient.Execute(new RestRequest("nodes/auto",
+            var enabledRes = restClient.Execute(new RestRequest("nodes/auto",
                     this.autoConnect.CheckState == CheckState.Checked ? Method.PUT : Method.DELETE, DataFormat.Json)
                 .AddHeader("Content-type", "application/json").AddJsonBody(new { }));
-            restClient.Execute(new RestRequest("connections/mode/"
+            if (enabledRes.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                MessageBox.Show("Cannot change auto/manual permission.");
+                return;
+            }
+            var connectedRes = restClient.Execute(new RestRequest("connections/mode/"
                 + (this.autoConnect.CheckState == CheckState.Checked ? "auto" : "manual")
                 + "?save=1", Method.PUT));
+            if (connectedRes.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                MessageBox.Show("Cannot change auto/manual connection mode.");
+                return;
+            }
         }
 
         private void NodeList_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -160,10 +184,20 @@ namespace gu_provider_ui_windows
                     Address = (string)nodeList.Rows[e.RowIndex].Cells[2].Value,
                     HostName = (string)nodeList.Rows[e.RowIndex].Cells[1].Value
                 };
-                restClient.Execute(new RestRequest("nodes/" + nodeId, enable ? Method.PUT : Method.DELETE, DataFormat.Json)
+                var enabledRes = restClient.Execute(new RestRequest("nodes/" + nodeId, enable ? Method.PUT : Method.DELETE, DataFormat.Json)
                     .AddParameter("application/json", JsonConvert.SerializeObject(body), ParameterType.RequestBody));
-                restClient.Execute(new RestRequest("connections/" + (enable ? "connect" : "disconnect") + "?save=1", Method.POST)
-                    .AddHeader("Content-type", "application/json").AddJsonBody(new string[] { nodeId }));
+                if (enabledRes.StatusCode != System.Net.HttpStatusCode.OK)
+                {
+                    MessageBox.Show("Cannot change node permission. node_id=" + nodeId);
+                    return;
+                }
+                var connectedRes = restClient.Execute(new RestRequest("connections/" + (enable ? "connect" : "disconnect") + "?save=1", Method.POST)
+                    .AddHeader("Content-type", "application/json").AddJsonBody(new string[] { body.Address }));
+                if (connectedRes.StatusCode != System.Net.HttpStatusCode.OK)
+                {
+                    MessageBox.Show("Cannot connect to " + body.Address);
+                    return;
+                }
             }
 
         }
