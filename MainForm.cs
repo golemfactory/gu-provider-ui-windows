@@ -110,28 +110,30 @@ namespace gu_provider_ui_windows
             this.Hide();
         }
 
-        private void ConfigureMenuItem_Click(object sender, EventArgs e)
-        {
-            this.WindowState = FormWindowState.Normal;
-            this.Show();
-        }
-
         private void ExitMenuItem_Click(object sender, EventArgs e)
         {
             Environment.Exit(0);
         }
 
-        private void NotifyIcon_Click(object sender, EventArgs e)
+        private void ShowForm(object sender, EventArgs e)
         {
-            this.WindowState = FormWindowState.Normal;
-            this.Show();
+            if (sender == notifyIcon && e is MouseEventArgs && ((MouseEventArgs)e).Button == MouseButtons.Right) { return; }
+            if (this.Visible == false || this.WindowState == FormWindowState.Minimized)
+            {
+                this.WindowState = FormWindowState.Normal;
+                this.Show();
+                this.ReloadHubList();
+            } else if (sender == notifyIcon)
+            {
+                this.Hide();
+            }
         }
 
         private void MainForm_Shown(object sender, EventArgs e)
         {
             if (Properties.Settings.Default.NumberOfRuns == 0)
             {
-                this.WindowState = FormWindowState.Normal;
+                ShowForm(sender, e);
             }
             ++Properties.Settings.Default.NumberOfRuns;
             Properties.Settings.Default.Save();

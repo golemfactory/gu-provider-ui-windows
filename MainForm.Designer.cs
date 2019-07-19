@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.nodeList = new System.Windows.Forms.DataGridView();
             this.Connect = new System.Windows.Forms.DataGridViewCheckBoxColumn();
@@ -77,9 +77,9 @@
             this.nodeList.Name = "nodeList";
             this.nodeList.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
             this.nodeList.RowHeadersVisible = false;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.ControlText;
-            this.nodeList.RowsDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.ControlText;
+            this.nodeList.RowsDefaultCellStyle = dataGridViewCellStyle2;
             this.nodeList.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.nodeList.Size = new System.Drawing.Size(618, 251);
             this.nodeList.TabIndex = 2;
@@ -211,7 +211,7 @@
             this.notifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon.Icon")));
             this.notifyIcon.Text = "Golem Unlimited Provider UI";
             this.notifyIcon.Visible = true;
-            this.notifyIcon.Click += new System.EventHandler(this.NotifyIcon_Click);
+            this.notifyIcon.Click += new System.EventHandler(this.ShowForm);
             // 
             // contextMenu
             // 
@@ -226,7 +226,7 @@
             this.configureMenuItem.Name = "configureMenuItem";
             this.configureMenuItem.Size = new System.Drawing.Size(127, 22);
             this.configureMenuItem.Text = "Configure";
-            this.configureMenuItem.Click += new System.EventHandler(this.ConfigureMenuItem_Click);
+            this.configureMenuItem.Click += new System.EventHandler(this.ShowForm);
             // 
             // exitMenuItem
             // 
