@@ -20,6 +20,7 @@ namespace gu_provider_ui_windows
         {
             InitializeComponent();
             this.checkProviderStatus.Enabled = true;
+            this.Visible = false;
         }
 
         private void ReloadHubList()
@@ -111,22 +112,29 @@ namespace gu_provider_ui_windows
 
         private void ConfigureMenuItem_Click(object sender, EventArgs e)
         {
+            this.WindowState = FormWindowState.Normal;
             this.Show();
         }
 
         private void ExitMenuItem_Click(object sender, EventArgs e)
         {
-            Application.Exit();
+            Environment.Exit(0);
         }
 
         private void NotifyIcon_Click(object sender, EventArgs e)
         {
+            this.WindowState = FormWindowState.Normal;
             this.Show();
         }
 
         private void MainForm_Shown(object sender, EventArgs e)
         {
-            this.Hide();
+            if (Properties.Settings.Default.NumberOfRuns == 0)
+            {
+                this.WindowState = FormWindowState.Normal;
+            }
+            ++Properties.Settings.Default.NumberOfRuns;
+            Properties.Settings.Default.Save();
         }
 
         private void RefreshButton_Click(object sender, EventArgs e)
@@ -144,7 +152,6 @@ namespace gu_provider_ui_windows
                     if (statusObj != null)
                     {
                         var status = statusObj.Envs["hostDirect"];
-                        //this.statusField.Text = "Golem Unlimited Provider Status: " + status;
                         statusField.Invoke((MethodInvoker)(() => statusField.Text = "Golem Unlimited Provider Status: " + status));
                         return;
                     }
