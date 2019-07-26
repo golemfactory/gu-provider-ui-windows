@@ -75,43 +75,42 @@ namespace gu_provider_ui_windows
 
         private void AddHubButton_Click(object sender, EventArgs e)
         {
-            var f = new AddHubForm
+            using (var f = new AddHubForm { StartPosition = FormStartPosition.CenterParent })
             {
-                StartPosition = FormStartPosition.CenterParent
-            };
-            var result = f.ShowDialog();
-            if (result == DialogResult.OK)
-            {
-                var ipPort = f.ipAddress.Text + ":" + f.portNumber.Text;
-                try
+                var result = f.ShowDialog();
+                if (result == DialogResult.OK)
                 {
-                    var urlString = "http://" + ipPort;
-                    var hubResponse = new RestClient(urlString).Execute(new RestRequest("node_id/", Method.GET)).Content;
-                    var nodeIdAndHostName = hubResponse.Split(new char[] { ' ' }, 2);
-                    AddressAndHostName body = new AddressAndHostName
+                    var ipPort = f.ipAddress.Text + ":" + f.portNumber.Text;
+                    try
                     {
-                        Address = ipPort,
-                        HostName = nodeIdAndHostName[1]
-                    };
-                    var enabledRes = restClient.Execute(new RestRequest("nodes/" + nodeIdAndHostName[0], Method.PUT, DataFormat.Json)
-                        .AddParameter("application/json", JsonConvert.SerializeObject(body), ParameterType.RequestBody));
-                    if (enabledRes.StatusCode != System.Net.HttpStatusCode.OK)
-                    {
-                        MessageBox.Show("Cannot change node permission. node_id=" + nodeIdAndHostName[0]);
-                        return;
+                        var urlString = "http://" + ipPort;
+                        var hubResponse = new RestClient(urlString).Execute(new RestRequest("node_id/", Method.GET)).Content;
+                        var nodeIdAndHostName = hubResponse.Split(new char[] { ' ' }, 2);
+                        AddressAndHostName body = new AddressAndHostName
+                        {
+                            Address = ipPort,
+                            HostName = nodeIdAndHostName[1]
+                        };
+                        var enabledRes = restClient.Execute(new RestRequest("nodes/" + nodeIdAndHostName[0], Method.PUT, DataFormat.Json)
+                            .AddParameter("application/json", JsonConvert.SerializeObject(body), ParameterType.RequestBody));
+                        if (enabledRes.StatusCode != System.Net.HttpStatusCode.OK)
+                        {
+                            MessageBox.Show("Cannot change node permission. node_id=" + nodeIdAndHostName[0]);
+                            return;
+                        }
+                        var connectedRes = restClient.Execute(new RestRequest("connections/connect?save=1", Method.POST)
+                            .AddHeader("Content-type", "application/json").AddJsonBody(new string[] { body.Address }));
+                        if (connectedRes.StatusCode != System.Net.HttpStatusCode.OK)
+                        {
+                            MessageBox.Show("Cannot connect to " + body.Address);
+                            return;
+                        }
+                        ReloadHubList();
                     }
-                    var connectedRes = restClient.Execute(new RestRequest("connections/connect?save=1", Method.POST)
-                        .AddHeader("Content-type", "application/json").AddJsonBody(new string[] { body.Address }));
-                    if (connectedRes.StatusCode != System.Net.HttpStatusCode.OK)
+                    catch (Exception err)
                     {
-                        MessageBox.Show("Cannot connect to " + body.Address);
-                        return;
+                        MessageBox.Show("Cannot add " + ipPort + ". Error: " + err.Message);
                     }
-                    ReloadHubList();
-                }
-                catch (Exception err)
-                {
-                    MessageBox.Show("Cannot add " + ipPort + ". Error: " + err.Message);
                 }
             }
         }
