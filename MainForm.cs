@@ -93,8 +93,20 @@ namespace gu_provider_ui_windows
                         Address = ipPort,
                         HostName = nodeIdAndHostName[1]
                     };
-                    restClient.Execute(new RestRequest("nodes/" + nodeIdAndHostName[0], Method.PUT, DataFormat.Json)
+                    var enabledRes = restClient.Execute(new RestRequest("nodes/" + nodeIdAndHostName[0], Method.PUT, DataFormat.Json)
                         .AddParameter("application/json", JsonConvert.SerializeObject(body), ParameterType.RequestBody));
+                    if (enabledRes.StatusCode != System.Net.HttpStatusCode.OK)
+                    {
+                        MessageBox.Show("Cannot change node permission. node_id=" + nodeIdAndHostName[0]);
+                        return;
+                    }
+                    var connectedRes = restClient.Execute(new RestRequest("connections/connect?save=1", Method.POST)
+                        .AddHeader("Content-type", "application/json").AddJsonBody(new string[] { body.Address }));
+                    if (connectedRes.StatusCode != System.Net.HttpStatusCode.OK)
+                    {
+                        MessageBox.Show("Cannot connect to " + body.Address);
+                        return;
+                    }
                     ReloadHubList();
                 }
                 catch (Exception err)
