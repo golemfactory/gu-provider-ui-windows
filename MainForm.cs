@@ -48,7 +48,7 @@ namespace gu_provider_ui_windows
                 {
                     foreach (var host in hosts)
                     {
-                        bool status = restClient.Execute(new RestRequest(host.NodeId(), Method.GET)).Content.Contains("true");
+                        bool status = restClient.Execute(new RestRequest("nodes/" + host.NodeId(), Method.GET)).Content.Contains("true");
                         nodeList.Rows.Add(status, host.Name, host.Address, host.NodeId());
                         allNodes.Add(host.NodeId());
                     }
@@ -63,7 +63,7 @@ namespace gu_provider_ui_windows
                 {
                     foreach (var host in hosts)
                     {
-                        bool status = restClient.Execute(new RestRequest(host.NodeId, Method.GET)).Content.Contains("true");
+                        bool status = restClient.Execute(new RestRequest("nodes/" + host.NodeId, Method.GET)).Content.Contains("true");
                         if (!allNodes.Contains(host.NodeId))
                         {
                             nodeList.Rows.Add(status, host.Name, host.Address, host.NodeId);
