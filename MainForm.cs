@@ -33,7 +33,9 @@ namespace gu_provider_ui_windows
             }
             if (autoMode.StatusCode == System.Net.HttpStatusCode.OK)
             {
+                autoConnect.CheckedChanged -= AutoConnect_CheckedChanged;
                 autoConnect.Checked = autoMode.Content.Contains("true");
+                autoConnect.CheckedChanged += AutoConnect_CheckedChanged;
             }
 
             nodeList.Rows.Clear();
