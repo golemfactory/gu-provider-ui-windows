@@ -125,6 +125,7 @@ namespace gu_provider_ui_windows
 
         private void ExitMenuItem_Click(object sender, EventArgs e)
         {
+            notifyIcon.Dispose();
             Environment.Exit(0);
         }
 
