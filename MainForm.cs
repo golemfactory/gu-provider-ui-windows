@@ -25,19 +25,27 @@ namespace gu_provider_ui_windows
 
         private void ReloadHubList()
         {
-            var autoMode = restClient.Execute(new RestRequest("nodes/auto", Method.GET));
-            if (autoMode.ResponseStatus != ResponseStatus.Completed)
+            restClient.ExecuteAsync(new RestRequest("nodes/auto", Method.GET), autoMode =>
             {
-                MessageBox.Show("Cannot connect to Golem Unlimited Provider.");
-                return;
-            }
-            if (autoMode.StatusCode == System.Net.HttpStatusCode.OK)
-            {
-                autoConnect.CheckedChanged -= AutoConnect_CheckedChanged;
-                autoConnect.Checked = autoMode.Content.Contains("true");
-                autoConnect.CheckedChanged += AutoConnect_CheckedChanged;
-            }
+                if (autoMode.ResponseStatus != ResponseStatus.Completed)
+                {
+                    return;
+                }
+                if (autoMode.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    autoConnect.Invoke((MethodInvoker)delegate
+                    {
+                        autoConnect.CheckedChanged -= AutoConnect_CheckedChanged;
+                        autoConnect.Checked = autoMode.Content.Contains("true");
+                        autoConnect.CheckedChanged += AutoConnect_CheckedChanged;
+                        FinishReloadingHubList();
+                    });
+                }
+            });
+        }
 
+        private void FinishReloadingHubList()
+        {
             nodeList.Rows.Clear();
 
             HashSet<string> allNodes = new HashSet<string>();
@@ -168,11 +176,19 @@ namespace gu_provider_ui_windows
                     if (statusObj != null)
                     {
                         var status = statusObj.Envs["hostDirect"];
-                        statusField.Invoke((MethodInvoker)(() => statusField.Text = "Golem Unlimited Provider Status: " + status));
+                        statusField.Invoke((MethodInvoker)delegate
+                        {
+                            statusField.Text = "Golem Unlimited Provider Status: " + status;
+                            ReloadHubList();
+                        });
                         return;
                     }
                 }
-                statusField.Invoke((MethodInvoker)(() => statusField.Text = "No connection"));
+                statusField.Invoke((MethodInvoker)delegate
+                {
+                    statusField.Text = "No connection to Golem Unlimited Provider";
+                    nodeList.Rows.Clear();
+                });
             });
         }
 
