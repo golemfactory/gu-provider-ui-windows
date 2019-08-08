@@ -119,7 +119,7 @@ namespace gu_provider_ui_windows
                     }
                     catch (Exception err)
                     {
-                        MessageBox.Show("Cannot add " + ipPort + ". Error: " + err.Message);
+                        MessageBox.Show("Cannot add " + ipPort + ". Please check IP address and port number. Error: " + err.Message);
                     }
                 }
             }
@@ -179,15 +179,23 @@ namespace gu_provider_ui_windows
                         statusField.Invoke((MethodInvoker)delegate
                         {
                             statusField.Text = "Golem Unlimited Provider Status: " + status;
-                            ReloadHubList();
+                            if (tableLayoutPanel2.Enabled == false)
+                            {
+                                tableLayoutPanel2.Enabled = true;
+                                ReloadHubList();
+                            }
                         });
                         return;
                     }
                 }
                 statusField.Invoke((MethodInvoker)delegate
                 {
-                    statusField.Text = "No connection to Golem Unlimited Provider";
-                    nodeList.Rows.Clear();
+                    statusField.Text = "No connection to Golem Unlimited Provider. Please run it on this PC.";
+                    if (tableLayoutPanel2.Enabled == true)
+                    {
+                        nodeList.Rows.Clear();
+                        tableLayoutPanel2.Enabled = false;
+                    }
                 });
             });
         }

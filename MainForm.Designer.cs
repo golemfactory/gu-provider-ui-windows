@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.nodeList = new System.Windows.Forms.DataGridView();
             this.Connect = new System.Windows.Forms.DataGridViewCheckBoxColumn();
@@ -77,9 +77,9 @@
             this.nodeList.Name = "nodeList";
             this.nodeList.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
             this.nodeList.RowHeadersVisible = false;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.ControlText;
-            this.nodeList.RowsDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.ControlText;
+            this.nodeList.RowsDefaultCellStyle = dataGridViewCellStyle1;
             this.nodeList.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.nodeList.Size = new System.Drawing.Size(618, 251);
             this.nodeList.TabIndex = 2;
@@ -165,6 +165,7 @@
             this.tableLayoutPanel2.Controls.Add(this.refreshButton, 1, 0);
             this.tableLayoutPanel2.Controls.Add(this.autoConnect, 0, 0);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.Enabled = false;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(8, 8);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 1;
