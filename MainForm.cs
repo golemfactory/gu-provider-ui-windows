@@ -1,11 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json;
 using RestSharp;
@@ -35,9 +29,9 @@ namespace gu_provider_ui_windows
                 {
                     autoConnect.Invoke((MethodInvoker)delegate
                     {
-                        autoConnect.CheckedChanged -= AutoConnect_CheckedChanged;
-                        autoConnect.Checked = autoMode.Content.Contains("true");
-                        autoConnect.CheckedChanged += AutoConnect_CheckedChanged;
+                        autoConnect.SelectedIndexChanged -= AutoConnect_SelectedChanged;
+                        autoConnect.SelectedIndex = Int32.Parse(autoMode.Content);
+                        autoConnect.SelectedIndexChanged += AutoConnect_SelectedChanged;
                         FinishReloadingHubList();
                     });
                 }
@@ -58,8 +52,9 @@ namespace gu_provider_ui_windows
                 {
                     foreach (var host in hosts)
                     {
-                        bool status = restClient.Execute(new RestRequest("nodes/" + host.NodeId(), Method.GET)).Content.Contains("true");
-                        nodeList.Rows.Add(status, host.Name, host.Address, host.NodeId());
+                        Int32 mode = Int32.Parse(restClient.Execute(new RestRequest("nodes/" + host.NodeId(), Method.GET)).Content);
+                        var colItems = ((DataGridViewComboBoxColumn)nodeList.Columns[1]).Items;
+                        nodeList.Rows.Add(host.Name, colItems[mode], "-", host.Address, host.NodeId());
                         allNodes.Add(host.NodeId());
                     }
                 }
@@ -73,10 +68,10 @@ namespace gu_provider_ui_windows
                 {
                     foreach (var host in hosts)
                     {
-                        bool status = restClient.Execute(new RestRequest("nodes/" + host.NodeId, Method.GET)).Content.Contains("true");
+                        Int32 mode = Int32.Parse(restClient.Execute(new RestRequest("nodes/" + host.NodeId, Method.GET)).Content);
                         if (!allNodes.Contains(host.NodeId))
                         {
-                            nodeList.Rows.Add(status, host.Name, host.Address, host.NodeId);
+                            nodeList.Rows.Add(host.Name, mode, "-", host.Address, host.NodeId);
                         }
                     }
                 }
@@ -96,10 +91,11 @@ namespace gu_provider_ui_windows
                         var urlString = "http://" + ipPort;
                         var hubResponse = new RestClient(urlString).Execute(new RestRequest("node_id/", Method.GET)).Content;
                         var nodeIdAndHostName = hubResponse.Split(new char[] { ' ' }, 2);
-                        AddressAndHostName body = new AddressAndHostName
+                        AddressHostNameAccessLevel body = new AddressHostNameAccessLevel
                         {
                             Address = ipPort,
-                            HostName = nodeIdAndHostName[1]
+                            HostName = nodeIdAndHostName[1],
+                            AccessLevel = 1
                         };
                         var enabledRes = restClient.Execute(new RestRequest("nodes/" + nodeIdAndHostName[0], Method.PUT, DataFormat.Json)
                             .AddParameter("application/json", JsonConvert.SerializeObject(body), ParameterType.RequestBody));
@@ -166,6 +162,45 @@ namespace gu_provider_ui_windows
             this.ReloadHubList();
         }
 
+        private void UpdateConnectionStatus()
+        {
+            if (this.Visible == false || this.WindowState == FormWindowState.Minimized) { return; }
+            restClient.ExecuteAsync(new RestRequest("connections/list/all", Method.GET), response =>
+            {
+                if (response.ResponseStatus != ResponseStatus.Completed)
+                {
+                    return;
+                }
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    var connections = JsonConvert.DeserializeObject<List<List<string>>>(response.Content);
+                    var statuses = new Dictionary<string, string>();
+                    if (connections != null)
+                    {
+                        foreach (var c in connections)
+                        {
+                            statuses.Add(c[0], c[1]);
+                        }
+                    }
+                    foreach (DataGridViewRow row in nodeList.Rows)
+                    {
+                        string ip = (string)row.Cells[3].Value;
+                        if (statuses.ContainsKey(ip))
+                        {
+                            if (!((string)row.Cells[2].Value).Equals(statuses[ip]))
+                            {
+                                row.Cells[2].Value = statuses[ip];
+                            }
+                        }
+                        else
+                        {
+                            row.Cells[2].Value = "-";
+                        }
+                    }
+                 }
+            });
+        }
+
         private void CheckProviderStatus_Tick(object sender, EventArgs e)
         {
             restClient.ExecuteAsync(new RestRequest("status?timeout=1", Method.GET), res =>
@@ -184,6 +219,7 @@ namespace gu_provider_ui_windows
                                 tableLayoutPanel2.Enabled = true;
                                 ReloadHubList();
                             }
+                            if (status == "Ready") this.UpdateConnectionStatus();
                         });
                         return;
                     }
@@ -200,18 +236,18 @@ namespace gu_provider_ui_windows
             });
         }
 
-        private void AutoConnect_CheckedChanged(object sender, EventArgs e)
+        private void AutoConnect_SelectedChanged(object sender, EventArgs e)
         {
             var enabledRes = restClient.Execute(new RestRequest("nodes/auto",
-                    this.autoConnect.CheckState == CheckState.Checked ? Method.PUT : Method.DELETE, DataFormat.Json)
-                .AddHeader("Content-type", "application/json").AddJsonBody(new { }));
+                    this.autoConnect.SelectedIndex > 0 ? Method.PUT : Method.DELETE, DataFormat.Json)
+                .AddHeader("Content-type", "application/json").AddJsonBody(new { accessLevel = this.autoConnect.SelectedIndex }));
             if (enabledRes.StatusCode != System.Net.HttpStatusCode.OK)
             {
                 MessageBox.Show("Cannot change auto/manual permission.");
                 return;
             }
             var connectedRes = restClient.Execute(new RestRequest("connections/mode/"
-                + (this.autoConnect.CheckState == CheckState.Checked ? "auto" : "manual")
+                + (this.autoConnect.SelectedIndex > 0 ? "auto" : "manual")
                 + "?save=1", Method.PUT));
             if (connectedRes.StatusCode != System.Net.HttpStatusCode.OK)
             {
@@ -222,31 +258,46 @@ namespace gu_provider_ui_windows
 
         private void NodeList_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.ColumnIndex == 0)
+            if (e.RowIndex < 0) return;
+            if (e.ColumnIndex == 1)
             {
-                bool enable = (bool)nodeList.Rows[e.RowIndex].Cells[0].EditedFormattedValue;
-                string nodeId = (string)nodeList.Rows[e.RowIndex].Cells[3].Value;
-                AddressAndHostName body = new AddressAndHostName
+                var cell = (DataGridViewComboBoxCell)nodeList.Rows[e.RowIndex].Cells[1];
+                Int32 selected = 0;
+                for (int i = 0; i < cell.Items.Count; ++i)
                 {
-                    Address = (string)nodeList.Rows[e.RowIndex].Cells[2].Value,
-                    HostName = (string)nodeList.Rows[e.RowIndex].Cells[1].Value
+                    if (cell.Items[i].Equals(cell.Value)) selected = i;
+                }
+                string nodeId = (string)nodeList.Rows[e.RowIndex].Cells[4].Value;
+                AddressHostNameAccessLevel body = new AddressHostNameAccessLevel
+                {
+                    Address = (string)nodeList.Rows[e.RowIndex].Cells[3].Value,
+                    HostName = (string)nodeList.Rows[e.RowIndex].Cells[0].Value,
+                    AccessLevel = selected
                 };
-                var enabledRes = restClient.Execute(new RestRequest("nodes/" + nodeId, enable ? Method.PUT : Method.DELETE, DataFormat.Json)
+                var enabledRes = restClient.Execute(new RestRequest("nodes/" + nodeId, selected > 0 ? Method.PUT : Method.DELETE, DataFormat.Json)
                     .AddParameter("application/json", JsonConvert.SerializeObject(body), ParameterType.RequestBody));
                 if (enabledRes.StatusCode != System.Net.HttpStatusCode.OK)
                 {
                     MessageBox.Show("Cannot change node permission. node_id=" + nodeId);
                     return;
                 }
-                var connectedRes = restClient.Execute(new RestRequest("connections/" + (enable ? "connect" : "disconnect") + "?save=1", Method.POST)
+                var connectedRes = restClient.Execute(new RestRequest("connections/" + (selected > 0 ? "connect" : "disconnect") + "?save=1", Method.POST)
                     .AddHeader("Content-type", "application/json").AddJsonBody(new string[] { body.Address }));
                 if (connectedRes.StatusCode != System.Net.HttpStatusCode.OK)
                 {
                     MessageBox.Show("Cannot connect to " + body.Address);
                     return;
                 }
+                this.nodeList.Invalidate();
             }
+        }
 
+        private void NodeList_CurrentCellDirtyStateChanged(object sender, EventArgs e)
+        {
+            if (this.nodeList.IsCurrentCellDirty)
+            {
+                this.nodeList.CommitEdit(DataGridViewDataErrorContexts.Commit);
+            }
         }
     }
 }
@@ -287,10 +338,12 @@ class ServerStatusInfo
     public Dictionary<string, string> Envs { get; set; }
 }
 
-class AddressAndHostName
+class AddressHostNameAccessLevel
 {
     [JsonProperty("address")]
     public string Address { get; set; }
     [JsonProperty("hostName")]
     public string HostName { get; set; }
+    [JsonProperty("accessLevel")]
+    public int AccessLevel { get; set; }
 }

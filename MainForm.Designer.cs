@@ -32,22 +32,24 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.nodeList = new System.Windows.Forms.DataGridView();
-            this.Connect = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.NodeName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.NodeIPAddress = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.NodeID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.statusField = new System.Windows.Forms.Label();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.addHubButton = new System.Windows.Forms.Button();
             this.refreshButton = new System.Windows.Forms.Button();
-            this.autoConnect = new System.Windows.Forms.CheckBox();
+            this.autoConnect = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.contextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.configureMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.checkProviderStatus = new System.Windows.Forms.Timer(this.components);
+            this.NodeName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Connect = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.NodeIPAddress = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.NodeID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.nodeList)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
@@ -66,11 +68,13 @@
             this.nodeList.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
             this.nodeList.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.nodeList.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Connect,
             this.NodeName,
+            this.Connect,
+            this.Status,
             this.NodeIPAddress,
             this.NodeID});
             this.nodeList.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.nodeList.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
             this.nodeList.EnableHeadersVisualStyles = false;
             this.nodeList.Location = new System.Drawing.Point(8, 43);
             this.nodeList.MultiSelect = false;
@@ -83,38 +87,8 @@
             this.nodeList.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.nodeList.Size = new System.Drawing.Size(618, 251);
             this.nodeList.TabIndex = 2;
-            this.nodeList.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.NodeList_CellContentClick);
-            // 
-            // Connect
-            // 
-            this.Connect.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            this.Connect.HeaderText = "Connect";
-            this.Connect.Name = "Connect";
-            this.Connect.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.Connect.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            this.Connect.Width = 71;
-            // 
-            // NodeName
-            // 
-            this.NodeName.HeaderText = "Name";
-            this.NodeName.Name = "NodeName";
-            this.NodeName.ReadOnly = true;
-            this.NodeName.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            // 
-            // NodeIPAddress
-            // 
-            this.NodeIPAddress.HeaderText = "IPAddress";
-            this.NodeIPAddress.Name = "NodeIPAddress";
-            this.NodeIPAddress.ReadOnly = true;
-            this.NodeIPAddress.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            // 
-            // NodeID
-            // 
-            this.NodeID.FillWeight = 180F;
-            this.NodeID.HeaderText = "Node ID";
-            this.NodeID.Name = "NodeID";
-            this.NodeID.ReadOnly = true;
-            this.NodeID.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.nodeList.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.NodeList_CellContentClick);
+            this.nodeList.CurrentCellDirtyStateChanged += new System.EventHandler(this.NodeList_CurrentCellDirtyStateChanged);
             // 
             // tableLayoutPanel1
             // 
@@ -157,13 +131,16 @@
             // tableLayoutPanel2
             // 
             this.tableLayoutPanel2.AutoSize = true;
-            this.tableLayoutPanel2.ColumnCount = 3;
+            this.tableLayoutPanel2.ColumnCount = 5;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.Controls.Add(this.addHubButton, 2, 0);
-            this.tableLayoutPanel2.Controls.Add(this.refreshButton, 1, 0);
-            this.tableLayoutPanel2.Controls.Add(this.autoConnect, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.addHubButton, 4, 0);
+            this.tableLayoutPanel2.Controls.Add(this.refreshButton, 3, 0);
+            this.tableLayoutPanel2.Controls.Add(this.autoConnect, 1, 0);
+            this.tableLayoutPanel2.Controls.Add(this.label1, 0, 0);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.Enabled = false;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(8, 8);
@@ -195,16 +172,28 @@
             // 
             // autoConnect
             // 
-            this.autoConnect.AutoSize = true;
-            this.autoConnect.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.autoConnect.Location = new System.Drawing.Point(4, 3);
-            this.autoConnect.Margin = new System.Windows.Forms.Padding(4, 3, 3, 3);
+            this.autoConnect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.autoConnect.FormattingEnabled = true;
+            this.autoConnect.Items.AddRange(new object[] {
+            "No Change",
+            "Allow (Sandbox)",
+            "Allow (Full Access)"});
+            this.autoConnect.Location = new System.Drawing.Point(140, 3);
             this.autoConnect.Name = "autoConnect";
-            this.autoConnect.Size = new System.Drawing.Size(449, 23);
+            this.autoConnect.Size = new System.Drawing.Size(121, 21);
             this.autoConnect.TabIndex = 2;
-            this.autoConnect.Text = "&Automatically connect to all local hubs and to selected hubs";
-            this.autoConnect.UseVisualStyleBackColor = true;
-            this.autoConnect.CheckedChanged += new System.EventHandler(this.AutoConnect_CheckedChanged);
+            this.autoConnect.SelectedIndexChanged += new System.EventHandler(this.AutoConnect_SelectedChanged);
+            // 
+            // label1
+            // 
+            this.label1.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(3, 8);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(131, 13);
+            this.label1.TabIndex = 3;
+            this.label1.Text = "Unconfigured Local Hubs:";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // notifyIcon
             // 
@@ -238,8 +227,52 @@
             // 
             // checkProviderStatus
             // 
-            this.checkProviderStatus.Interval = 2000;
+            this.checkProviderStatus.Interval = 1000;
             this.checkProviderStatus.Tick += new System.EventHandler(this.CheckProviderStatus_Tick);
+            // 
+            // NodeName
+            // 
+            this.NodeName.FillWeight = 34.31496F;
+            this.NodeName.HeaderText = "Hub Name";
+            this.NodeName.Name = "NodeName";
+            this.NodeName.ReadOnly = true;
+            this.NodeName.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            // 
+            // Connect
+            // 
+            this.Connect.DisplayStyle = System.Windows.Forms.DataGridViewComboBoxDisplayStyle.ComboBox;
+            this.Connect.FillWeight = 50F;
+            this.Connect.HeaderText = "Permission";
+            this.Connect.Items.AddRange(new object[] {
+            "Denied",
+            "Allowed (Sandbox)",
+            "Allowed (Full Access)"});
+            this.Connect.Name = "Connect";
+            this.Connect.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.Connect.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            // 
+            // Status
+            // 
+            this.Status.FillWeight = 34.31496F;
+            this.Status.HeaderText = "Status";
+            this.Status.Name = "Status";
+            this.Status.ReadOnly = true;
+            // 
+            // NodeIPAddress
+            // 
+            this.NodeIPAddress.FillWeight = 34.31496F;
+            this.NodeIPAddress.HeaderText = "IPAddress";
+            this.NodeIPAddress.Name = "NodeIPAddress";
+            this.NodeIPAddress.ReadOnly = true;
+            this.NodeIPAddress.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            // 
+            // NodeID
+            // 
+            this.NodeID.FillWeight = 61.76692F;
+            this.NodeID.HeaderText = "Node ID";
+            this.NodeID.Name = "NodeID";
+            this.NodeID.ReadOnly = true;
+            this.NodeID.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             // 
             // MainForm
             // 
@@ -279,16 +312,18 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.Button addHubButton;
         private System.Windows.Forms.Button refreshButton;
-        private System.Windows.Forms.CheckBox autoConnect;
         private System.Windows.Forms.NotifyIcon notifyIcon;
         private System.Windows.Forms.ContextMenuStrip contextMenu;
         private System.Windows.Forms.ToolStripMenuItem configureMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitMenuItem;
-        private System.Windows.Forms.DataGridViewCheckBoxColumn Connect;
+        private System.Windows.Forms.Timer checkProviderStatus;
+        private System.Windows.Forms.ComboBox autoConnect;
+        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.DataGridViewTextBoxColumn NodeName;
+        private System.Windows.Forms.DataGridViewComboBoxColumn Connect;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Status;
         private System.Windows.Forms.DataGridViewTextBoxColumn NodeIPAddress;
         private System.Windows.Forms.DataGridViewTextBoxColumn NodeID;
-        private System.Windows.Forms.Timer checkProviderStatus;
     }
 }
 
