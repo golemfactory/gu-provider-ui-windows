@@ -89,6 +89,7 @@
             this.nodeList.TabIndex = 2;
             this.nodeList.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.NodeList_CellContentClick);
             this.nodeList.CurrentCellDirtyStateChanged += new System.EventHandler(this.NodeList_CurrentCellDirtyStateChanged);
+            this.nodeList.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.NodeList_DataError);
             // 
             // tableLayoutPanel1
             // 
