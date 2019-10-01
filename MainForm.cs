@@ -14,9 +14,17 @@ namespace gu_provider_ui_windows
 
         private Process providerProcess= null;
 
-
+ 
 
         public MainForm()
+        {
+            StartProvider();
+            InitializeComponent();
+            this.checkProviderStatus.Enabled = true;
+            this.Visible = false;
+        }
+
+        private void StartProvider()
         {
             var my_path = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
             var process = new Process
@@ -39,9 +47,6 @@ namespace gu_provider_ui_windows
             }
             catch (System.ComponentModel.Win32Exception e) { }
 
-            InitializeComponent();
-            this.checkProviderStatus.Enabled = true;
-            this.Visible = false;
         }
 
         private void ReloadHubList()
@@ -247,17 +252,36 @@ namespace gu_provider_ui_windows
                     var statusObj = JsonConvert.DeserializeObject<ServerStatusInfo>(res.Content);
                     if (statusObj != null)
                     {
-                        var status = statusObj.Envs["hostDirect"];
-                        statusField.Invoke((MethodInvoker)delegate
+                        var statusText = "Golem Unlimited Provider ";
+                        var valid = false;
+                        var refresh = true;
+                        foreach (var envType in statusObj.Envs.Keys)
                         {
-                            statusField.Text = "Golem Unlimited Provider Status: " + status;
+                            var status = statusObj.Envs[envType];
+                            statusText += $",{envType}: {status}";
+                            valid = true;
+                            if (status != "Ready")
+                            {
+                                refresh = false;
+                            }
+                        }
+
+                        if (valid)
+                        {
+                            statusField.Invoke((MethodInvoker)delegate
+                            {
+                                statusField.Text = statusText;
+                            });
                             if (tableLayoutPanel2.Enabled == false)
                             {
                                 tableLayoutPanel2.Enabled = true;
                                 ReloadHubList();
                             }
-                            if (status == "Ready") this.UpdateConnectionStatus();
-                        });
+                            if (refresh)
+                            {
+                                this.UpdateConnectionStatus();
+                            }
+                        }
                         return;
                     }
                 }

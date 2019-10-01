@@ -32,6 +32,11 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.nodeList = new System.Windows.Forms.DataGridView();
+            this.NodeName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Connect = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.NodeIPAddress = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.NodeID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.statusField = new System.Windows.Forms.Label();
@@ -45,11 +50,6 @@
             this.configureMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.checkProviderStatus = new System.Windows.Forms.Timer(this.components);
-            this.NodeName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Connect = new System.Windows.Forms.DataGridViewComboBoxColumn();
-            this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.NodeIPAddress = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.NodeID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.nodeList)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
@@ -85,11 +85,55 @@
             dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.ControlText;
             this.nodeList.RowsDefaultCellStyle = dataGridViewCellStyle1;
             this.nodeList.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.nodeList.Size = new System.Drawing.Size(618, 251);
+            this.nodeList.Size = new System.Drawing.Size(653, 251);
             this.nodeList.TabIndex = 2;
             this.nodeList.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.NodeList_CellContentClick);
             this.nodeList.CurrentCellDirtyStateChanged += new System.EventHandler(this.NodeList_CurrentCellDirtyStateChanged);
             this.nodeList.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.NodeList_DataError);
+            // 
+            // NodeName
+            // 
+            this.NodeName.FillWeight = 34.31496F;
+            this.NodeName.HeaderText = "Hub Name";
+            this.NodeName.Name = "NodeName";
+            this.NodeName.ReadOnly = true;
+            this.NodeName.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            // 
+            // Connect
+            // 
+            this.Connect.DisplayStyle = System.Windows.Forms.DataGridViewComboBoxDisplayStyle.ComboBox;
+            this.Connect.FillWeight = 50F;
+            this.Connect.HeaderText = "Permission";
+            this.Connect.Items.AddRange(new object[] {
+            "Denied",
+            "Allowed (Sandbox)",
+            "Allowed (Full Access)"});
+            this.Connect.Name = "Connect";
+            this.Connect.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.Connect.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            // 
+            // Status
+            // 
+            this.Status.FillWeight = 34.31496F;
+            this.Status.HeaderText = "Status";
+            this.Status.Name = "Status";
+            this.Status.ReadOnly = true;
+            // 
+            // NodeIPAddress
+            // 
+            this.NodeIPAddress.FillWeight = 34.31496F;
+            this.NodeIPAddress.HeaderText = "IPAddress";
+            this.NodeIPAddress.Name = "NodeIPAddress";
+            this.NodeIPAddress.ReadOnly = true;
+            this.NodeIPAddress.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            // 
+            // NodeID
+            // 
+            this.NodeID.FillWeight = 61.76692F;
+            this.NodeID.HeaderText = "Node ID";
+            this.NodeID.Name = "NodeID";
+            this.NodeID.ReadOnly = true;
+            this.NodeID.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             // 
             // tableLayoutPanel1
             // 
@@ -106,7 +150,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(634, 321);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(669, 321);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
             // flowLayoutPanel1
@@ -116,7 +160,7 @@
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(8, 300);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(618, 13);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(653, 13);
             this.flowLayoutPanel1.TabIndex = 0;
             // 
             // statusField
@@ -148,12 +192,12 @@
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(618, 29);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(653, 29);
             this.tableLayoutPanel2.TabIndex = 1;
             // 
             // addHubButton
             // 
-            this.addHubButton.Location = new System.Drawing.Point(540, 3);
+            this.addHubButton.Location = new System.Drawing.Point(575, 3);
             this.addHubButton.Name = "addHubButton";
             this.addHubButton.Size = new System.Drawing.Size(75, 23);
             this.addHubButton.TabIndex = 0;
@@ -163,7 +207,7 @@
             // 
             // refreshButton
             // 
-            this.refreshButton.Location = new System.Drawing.Point(459, 3);
+            this.refreshButton.Location = new System.Drawing.Point(494, 3);
             this.refreshButton.Name = "refreshButton";
             this.refreshButton.Size = new System.Drawing.Size(75, 23);
             this.refreshButton.TabIndex = 1;
@@ -231,55 +275,11 @@
             this.checkProviderStatus.Interval = 1000;
             this.checkProviderStatus.Tick += new System.EventHandler(this.CheckProviderStatus_Tick);
             // 
-            // NodeName
-            // 
-            this.NodeName.FillWeight = 34.31496F;
-            this.NodeName.HeaderText = "Hub Name";
-            this.NodeName.Name = "NodeName";
-            this.NodeName.ReadOnly = true;
-            this.NodeName.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            // 
-            // Connect
-            // 
-            this.Connect.DisplayStyle = System.Windows.Forms.DataGridViewComboBoxDisplayStyle.ComboBox;
-            this.Connect.FillWeight = 50F;
-            this.Connect.HeaderText = "Permission";
-            this.Connect.Items.AddRange(new object[] {
-            "Denied",
-            "Allowed (Sandbox)",
-            "Allowed (Full Access)"});
-            this.Connect.Name = "Connect";
-            this.Connect.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.Connect.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            // 
-            // Status
-            // 
-            this.Status.FillWeight = 34.31496F;
-            this.Status.HeaderText = "Status";
-            this.Status.Name = "Status";
-            this.Status.ReadOnly = true;
-            // 
-            // NodeIPAddress
-            // 
-            this.NodeIPAddress.FillWeight = 34.31496F;
-            this.NodeIPAddress.HeaderText = "IPAddress";
-            this.NodeIPAddress.Name = "NodeIPAddress";
-            this.NodeIPAddress.ReadOnly = true;
-            this.NodeIPAddress.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            // 
-            // NodeID
-            // 
-            this.NodeID.FillWeight = 61.76692F;
-            this.NodeID.HeaderText = "Node ID";
-            this.NodeID.Name = "NodeID";
-            this.NodeID.ReadOnly = true;
-            this.NodeID.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(634, 321);
+            this.ClientSize = new System.Drawing.Size(669, 321);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
