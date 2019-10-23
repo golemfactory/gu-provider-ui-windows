@@ -12,9 +12,7 @@ namespace gu_provider_ui_windows
     {
         private readonly RestClient restClient = new RestClient("http://127.0.0.1:61621");
 
-        private Process providerProcess= null;
-
- 
+        private Process providerProcess = null;
 
         public MainForm()
         {
@@ -27,12 +25,13 @@ namespace gu_provider_ui_windows
         private void StartProvider()
         {
             var my_path = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+            var portable_mode = File.Exists(my_path + "\\.gu-portable");
             var process = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = my_path + "\\gu_provider.exe",
-                    Arguments = "-v server run --user ",
+                    Arguments = "-v server run " + (portable_mode ? "" : "--user "),
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
                     CreateNoWindow = true,
@@ -45,7 +44,7 @@ namespace gu_provider_ui_windows
                 process.Start();
                 this.providerProcess = process;
             }
-            catch (System.ComponentModel.Win32Exception e) { }
+            catch (System.ComponentModel.Win32Exception) { }
 
         }
 
